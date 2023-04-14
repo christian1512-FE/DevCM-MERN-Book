@@ -9,8 +9,13 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+import { searchGoogleBooks } from '../utils/API';       //deleted saveBook()
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+
+//ADDED 4/13
+import { useMutation } from '@apollo/client';
+import { SAVE_BOOK } from '../utils/mutations'
+
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -20,6 +25,10 @@ const SearchBooks = () => {
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+
+  // ADDED 
+  const [saveBook] = useMutation(SAVE_BOOK)
+
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
@@ -70,19 +79,19 @@ const SearchBooks = () => {
     if (!token) {
       return false;
     }
+    console.log('out to mutation', bookToSave);
 
-    try {
-      const response = await saveBook(bookToSave, token);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      try {
+        await saveBook({
+          variables: { newBook: { ...bookToSave } },
+        });
 
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
       console.error(err);
-    }
+    };
   };
 
   return (
@@ -91,7 +100,9 @@ const SearchBooks = () => {
         <Container>
           <h1>Search for Books!</h1>
           <Form onSubmit={handleFormSubmit}>
-            <Form.Row>
+            {/* <Form.Row> */}
+            <Row>
+
               <Col xs={12} md={8}>
                 <Form.Control
                   name='searchInput'
@@ -107,7 +118,9 @@ const SearchBooks = () => {
                   Submit Search
                 </Button>
               </Col>
-            </Form.Row>
+            {/* </Form.Row> */}
+            </Row>
+
           </Form>
         </Container>
       </div>

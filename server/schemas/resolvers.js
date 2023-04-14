@@ -25,7 +25,7 @@ const resolvers = {
         throw new AuthenticationError('Invalid username & password')
       }
       const token = signToken(user)
-      return{user, token}
+      return { user, token }
     },
 
     addUser: async (parent, args) => {
@@ -35,11 +35,31 @@ const resolvers = {
 
     },
 
-    saveBook: async (parent, { bookData }) => {
+    saveBook: async (parent, { bookData }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('Must be logged in to save book')
+      }
 
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: context.user._id },
+        { $addToSet: { savedBooks: bookData } },
+        { new: true }
+      )
+
+      return updatedUser;
     },
-    removeBook: async (parent, { bookId }) => {
+    
+    removeBook: async (parent, { bookId }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('Must be logged in to remove a book')
+      }
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: context.user._id },
+        { $pull: { savedBooks: { bookId: bookId } } },
+        { new: true }
+      )
 
+      return updatedUser;
     },
   },
 };
