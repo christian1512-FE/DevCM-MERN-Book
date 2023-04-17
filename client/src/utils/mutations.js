@@ -63,7 +63,7 @@ mutation removeBook(
     $bookId: ID!
     ) {
     removeBook(
-        bookId: $bookid
+        bookId: $bookId
         ) {
         _id
         username
