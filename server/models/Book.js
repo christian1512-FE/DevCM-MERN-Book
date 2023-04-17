@@ -32,5 +32,3 @@ const bookSchema = new Schema({
 
 module.exports = bookSchema;
 
-// const Book = modle('Book', bookSchema)
-// module.exports = Book;
