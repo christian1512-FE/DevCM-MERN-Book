@@ -35,14 +35,14 @@ const resolvers = {
 
     },
 
-    saveBook: async (parent, { bookData }, context) => {
+    saveBook: async (parent, { newBook }, context) => {
       if (!context.user) {
         throw new AuthenticationError('Must be logged in to save book')
       }
 
       const updatedUser = await User.findOneAndUpdate(
         { _id: context.user._id },
-        { $addToSet: { savedBooks: bookData } },
+        { $addToSet: { savedBooks: newBook } },
         { new: true }
       )
 
